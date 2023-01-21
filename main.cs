@@ -1,27 +1,41 @@
-// Created by: Alex Nelson
-// Created on: Oct 2022
-//
-// This program calculates area of a triangle
 using System;
+using System.Reflection;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
-class Program
-{
-    public static void Main(string[] args)
+class Program {
+    public static async Task Main()
     {
-        //Input
-        int length;
-        int width;
-        int area;
-        Console.WriteLine("This program calculates the area of a triangle");
+        HttpClient client = new HttpClient();
+        string response = await client.GetStringAsync(
+            "https://api.openweathermap.org/data/2.5/weather?lat=45.4211435&lon=-75.6900574&appid=fe1d80e1e103cff8c6afd190cad23fa5"
+        );
+
+        
+        // Console.WriteLine(response);
+        var jsonAsDictionary  = System.Text.Json.JsonSerializer.Deserialize<Object>(response);
+        // Console.WriteLine(jsonAsDictionary);
         Console.WriteLine("");
-        Console.WriteLine("Enter length in cm: ");
-        length = Convert.ToInt32(Console.ReadLine());
-        Console.WriteLine("Enter width in cm: ");
-        width = Convert.ToInt32(Console.ReadLine());
-        area = length * width / 2;
-        //Output
-        Console.WriteLine("");
-        Console.WriteLine("The area is: " + area + " cm²");
-        Console.WriteLine("\nDone");
+        JsonNode forecastNode = JsonNode.Parse(response)!;
+
+        Console.WriteLine(response);
+        
+        // Important Nodes
+        JsonNode mainNode = forecastNode!["main"]!;
+        JsonNode tempNode = mainNode!["temp"]!;
+        JsonNode humidityNode = mainNode!["humidity"]!;
+         JsonNode minNode = mainNode!["temp_min"]!;
+         JsonNode maxNode = mainNode!["temp_max"]!;
+
+        //Output of important nodes
+        Console.WriteLine("\nTemperature: " + tempNode + " K");
+        Console.WriteLine("\nHumidity: " + humidityNode + "%");
+        Console.WriteLine("\nTemp Min: " + minNode + " K");
+        Console.WriteLine("\nTemp Max: " + maxNode + " K");
+        Console.WriteLine("\nThe weather can be found on the second half of the first line");
+        Console.WriteLine("\n\nDone");
     }
 }
